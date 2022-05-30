@@ -42,7 +42,9 @@ public class Main {
     }
 
     // получить сумму всех чисел в ряду от 0 до 100.
-    static int series_sum() {
+    static int series_sum(/*int value*/) {
+        // сумма чисел от 0 до N : N*(N+1)/2
+        // return value*(value+1)/2;
         int counter = 0, res = 0;
         while (counter <= 100) res += counter++;
         return res;
