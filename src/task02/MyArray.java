@@ -1,8 +1,5 @@
 package task02;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class MyArray {
     private int[] arr;
     private int capacity;
@@ -29,7 +26,8 @@ public class MyArray {
         arr = init;
     }
 
-    void display() {
+    void display(String ... msg) {
+        if (msg != null && msg.length > 0) System.out.println(msg[0]);
         for (int i = 0; i < capacity; ++i)
             System.out.print(arr[i] + " ");
         if (this.capacity > 0) System.out.println();

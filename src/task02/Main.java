@@ -21,11 +21,11 @@ public class Main {
         arr.set(4,5);*/
         arr.display();
         arr.append(10);
-        arr.display();
-        if (arr.delete(3)) arr.display();
+        arr.display("Массив после добавления числа 10:");
+        if (arr.delete(3)) arr.display("Массив после удаления числа 3:");
         arr.insert(4,5);
-        arr.display();
-        if (arr.deleteAll(5)) arr.display();
+        arr.display("Массив после вставки числа 5:");
+        if (arr.deleteAll(5)) arr.display("Массив после удаления всех чисел 5:");
         //System.out.println("Пузырьковая сортировка: "+ arr.doSort(MyArray.SORT_BUBBLE) * 0.000001f + "мс");
         System.out.println("Сортировка подсчетом: "+ arr.doSort(MyArray.SORT_CALCULATED) * 0.000001f + "мс");
         arr.display();
