@@ -1,50 +1,33 @@
-package ru.geekbrains.jads.lesson_b.online;
+/*
+    Урок 2. Массивы и сортировка
+
+    1. boolean deleteAll(int value);
+    2. boolean deleteAll()
+    3. void insert(int idx, int value); // shift the tail
+    4.0. подсчитать количество действий для каждой сортировки и сравнить со сложностью О-большое
+    4. улучшить пузырьковую сортировку
+    5.** реализовать сортировку подсчётом.
+ */
+package task02;
 
 public class Main {
     public static void main(String[] args) {
-
-        MyArray arr = new MyArray(new int[]{1,2,3,4,5,6,7});
+        MyArray arr = new MyArray(new int[] { 3, 2, 3, 4, 5, 4, 1, -6, 5, 12345, -7, 0, 2 } );
+        /*MyArray arr = new MyArray(5);
+        arr.set(0,3);
+        arr.set(1,2);
+        arr.set(2,3);
+        arr.set(3,4);
+        arr.set(4,5);*/
         arr.display();
         arr.append(10);
         arr.display();
-        arr.delete(3);
+        if (arr.delete(3)) arr.display();
+        arr.insert(4,5);
         arr.display();
-
-//        long current = System.nanoTime();
-//        String s0 = "Ex";
-//        for (int i = 0; i < 1_00_000; i++) {
-//            s0 += i;
-//        }
-//        float delta = (System.nanoTime() - current) * 0.000000001f;
-//        System.out.println(delta + " sec");
-//
-//        current = System.nanoTime();
-//        StringBuilder sb = new StringBuilder("Ex");
-//        for (int i = 0; i < 1_00_000; i++) {
-//            sb.append(i);
-//        }
-//        delta = (System.nanoTime() - current) * 0.000000001f;
-//        System.out.println(delta + " sec");
-//
-//        System.out.println(s0.equals(sb.toString()));
-//
-//
-//        int[] arr1;
-//        int arr0[];
-//
-//        arr1 = new int[5];
-//        arr0 = new int[]{1,2,3,4,5};
-//        int[] arr2 = {1,2,3,4,5};
-//        Integer[] arr3 = {1,2,3,4,5};
-//
-//        arr3[2] = null;
-//
-//        System.out.println(arr0);
-//        System.out.println(Arrays.toString(arr2));
-//
-//        arr2[2] = Integer.MAX_VALUE;
-//
-//        System.out.println(Arrays.toString(arr2));
-
+        if (arr.deleteAll(5)) arr.display();
+        //System.out.println("Пузырьковая сортировка: "+ arr.doSort(MyArray.SORT_BUBBLE) * 0.000001f + "мс");
+        System.out.println("Сортировка подсчетом: "+ arr.doSort(MyArray.SORT_CALCULATED) * 0.000001f + "мс");
+        arr.display();
     }
 }
