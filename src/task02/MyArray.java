@@ -9,7 +9,7 @@ public class MyArray {
     public static final int SORT_INSERT = 2;
     public static final int SORT_CALCULATED = 3;
 
-    public MyArray(int size) {
+    public MyArray(int size) throws RuntimeException {
         // есть некоторая смысловая неувязка: если метод append воспринимать как альтернативу set -
         // задание значений элементов, считая с индекса 0, то можно задавать здесь емкость как 0,
         // но при этом, во избежание путаницы, метод set вообще стоит удалить, поскольку он изменяет
@@ -17,6 +17,8 @@ public class MyArray {
         // если его (set) оставить и задать с его помощью несколько элементов, то вызов append будет
         // предполагать желание добавить (подчеркиваю) новый элемент, то есть раширить массив -
         // в этом случае запись в append должна происходть в позицию size, а не 0
+        if (size <= 0)
+            throw new RuntimeException("Invalid size of array");
         capacity = size;//0
         arr = new int[size];
     }
@@ -30,7 +32,7 @@ public class MyArray {
         if (msg != null && msg.length > 0) System.out.println(msg[0]);
         for (int i = 0; i < capacity; ++i)
             System.out.print(arr[i] + " ");
-        if (this.capacity > 0) System.out.println();
+        if (capacity > 0) System.out.println();
     }
 
     public int get(int idx) { return arr[idx]; }
@@ -39,7 +41,7 @@ public class MyArray {
 
     boolean delete(int value) {
         for (int i = 0; i < capacity; i++)
-            if (this.arr[i] == value) {
+            if (arr[i] == value) {
                 System.arraycopy(arr, i + 1, arr, i, capacity - i - 1);
                 --capacity;
                 return true;
@@ -48,20 +50,21 @@ public class MyArray {
     }
 
     boolean deleteAll(int value) {
-        int i = 0, atLeast = 0;
+        int i = 0, counter = 0;
         while (i < capacity)
             if (arr[i] == value) {
                 // искать последовательность удаляемых значений
-                int starter = i, counter = atLeast = 1;
+                int starter = i;
+                counter = 1;
                 while (i < capacity - 1 && arr[i+1] == value) {
                     counter++;
                     i++;
                 }
-                System.arraycopy(arr, i + 1, arr, starter, capacity - i - 1);
+                System.arraycopy(arr, i+1, arr, starter, capacity-i-1);
                 capacity -= counter;
             } else
                 i++;
-        return atLeast > 0;
+        return counter > 0;
     }
 
     boolean deleteAll() { capacity = 0; return true; }
@@ -69,11 +72,14 @@ public class MyArray {
     // добавить новый элемент в конец массива - расширить его размерность,
     // для изменения имеющихся элементов есть сеттер
     void append(int value) {
-        if (capacity == arr.length) {
-            int[] old = arr;
-            this.arr = new int[old.length * 2];
-            System.arraycopy(old, 0, arr, 0, old.length);
-        }
+        if (capacity == arr.length)
+            if (capacity == 0)
+                arr = new int[1];
+            else {
+                int[] old = arr;
+                arr = new int[old.length * 2];
+                System.arraycopy(old, 0, arr, 0, old.length);
+            }
         arr[capacity++] = value;
     }
 
@@ -85,7 +91,7 @@ public class MyArray {
             // если вставка делается не в начало массива, скопировать все элементы до позиции вставки
             if (idx > 0) System.arraycopy(old, 0, arr, 0, idx);
             // скопировать все элементы после позиции вставки: по меньшей мере 1 - последний
-            System.arraycopy(old, idx, arr, idx + 1, capacity - idx);
+            System.arraycopy(old, idx, arr, idx+1, capacity-idx);
             arr[idx] = value;
             capacity++;
         }
@@ -197,46 +203,41 @@ public class MyArray {
          методами сортировки
          */
         MyArray cnt = new MyArray(capacity), val = new MyArray(capacity);
-        int i, j, k, offs = 0, counter = 0;
+        int i, j, k, offs = 0, counter = 1;
 
+        val.set(0, arr[0]);
+        cnt.set(0, 1);
         // сформировать и упорядочить данные о частотах чисел в исходных данных
-        for (i = 0; i < capacity; i++)
-            // если массив частот пуст, задать его начальный элемент
-            if (counter == 0) {
-                val.set(counter, arr[i]);
+        for (i = 1; i < capacity; i++)
+            if (arr[i] > val.get(counter-1)) {
+                // если символ из исходных данных больше последнего элемента
+                // вспомогательного массива, поместить символ в конец вспомогательного
+                if (counter < capacity)
+                    val.set(counter, arr[i]);
+                else
+                    val.append(arr[i]);
                 cnt.set(counter++, 1);
             } else {
-                if (arr[i] > val.get(counter-1)) {
-                    // если символ из исходных данных больше последнего элемента
-                    // вспомогательного массива, поместить символ в конец вспомогательного
-                    if (counter < capacity)
-                        val.set(counter, arr[i]);
-                    else
-                        val.append(arr[i]);
-                    cnt.set(counter++, 1);
+                // иначе либо увеличить частоту символа из исходных данных,
+                // либо добавить новый символ во вспомогательный массив с
+                // упорядочиванием последнего и частот
+                j = counter-1;
+                while (j >= 0 && arr[i] < val.get(j)) j--;
+                if (j >= 0 && arr[i] == val.get(j)) {
+                    cnt.set(j, cnt.get(j)+1);
                 } else {
-                    // иначе либо увеличить частоту символа из исходных данных,
-                    // либо добавить новый символ во вспомогательный массив с
-                    // упорядочиванием последнего и частот
-                    j = counter-1;
-                    while (j >= 0 && arr[i] < val.get(j)) j--;
-                    if (j >= 0 && arr[i] == val.get(j)) {
-                        cnt.set(j, cnt.get(j)+1);
-                    } else {
-                        val.insert(j+1, arr[i]);
-                        cnt.insert(j+1, 1);
-                        counter++;
-                    }
+                    val.insert(j+1, arr[i]);
+                    cnt.insert(j+1, 1);
+                    counter++;
                 }
             }
 
         // сформировать выходные данные: в порядке возрастания величины символа из исходных данных
         // записывать его n раз (n - частота использования символа в исходных данных)
-        if (counter > 0)
-            for (i = 0; i < counter; i++)
-                if ((k = cnt.get(i)) > 0) {
-                    for (j = 0; j < k; j++) arr[offs+j] = val.get(i);
-                    offs += k;
-                }
+        for (i = 0; i < counter; i++)
+            if ((k = cnt.get(i)) > 0) {
+                for (j = 0; j < k; j++) arr[offs+j] = val.get(i);
+                offs += k;
+            }
     }
 }
