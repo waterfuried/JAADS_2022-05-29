@@ -51,6 +51,11 @@ public class Main {
         }
 
         final void nullify() { head = 0; tail = -1; items = 0; }
+            head = 0;
+            tail = -1;
+            items = 0;
+        }
+
         public boolean isEmpty() { return (items == 0); }
         public boolean isFull() { return (items == maxSize); }
         public int size() { return items; }
