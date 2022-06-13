@@ -15,9 +15,9 @@ import java.util.Iterator;
 
 public interface Iterable<T> extends Iterator<T> {
     void reset();
+    void moveToEnd();
     // в Iterator объявлен метод next(), возвращающий следующий элемент в итерации
     // а также есть boolean hasNext(), проверяющий наличие следующего элемента
-    void moveToEnd();
     @Override T next();
     @Override boolean hasNext();
     // проверить наличие элемента в очереди

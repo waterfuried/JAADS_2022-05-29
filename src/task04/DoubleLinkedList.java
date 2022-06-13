@@ -3,7 +3,7 @@ package task04;
 // 2.Написать очередь, использующую двусвязный список.
 public class DoubleLinkedList<T> {
     // 1.Реализовать класс итератора на двусвязном списке
-    private class DoubleGenericLinkedIterator implements Iterable<T> {
+    private class DoubleLinkedIterator implements Iterable<T> {
         GenericLink<T> current;
 
         @Override public void reset() { current = getHead(); }
@@ -97,7 +97,7 @@ public class DoubleLinkedList<T> {
 
     // очередь, использующая двусвязный список
     private GenericLink<T> head, tail;
-    private Iterable<T> iterator;
+    private final Iterable<T> iterator;
 
     public GenericLink<T> getHead() { return head; }
     public void setHead(GenericLink<T> head) { this.head = head; }
@@ -110,7 +110,7 @@ public class DoubleLinkedList<T> {
     public DoubleLinkedList() {
         head = null;
         tail = null;
-        iterator = new DoubleGenericLinkedIterator();
+        iterator = new DoubleLinkedIterator();
     }
 
     public boolean isEmpty() { return head == null; }

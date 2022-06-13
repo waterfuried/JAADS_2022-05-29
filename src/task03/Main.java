@@ -51,10 +51,6 @@ public class Main {
         }
 
         final void nullify() { head = 0; tail = -1; items = 0; }
-            head = 0;
-            tail = -1;
-            items = 0;
-        }
 
         public boolean isEmpty() { return (items == 0); }
         public boolean isFull() { return (items == maxSize); }
@@ -166,9 +162,9 @@ public class Main {
         public int removeFromTail() throws RuntimeException {
             if (isEmpty()) throw new RuntimeException("Queue is empty");
 
-            int t = getTail(), tmp = getQueueAt(t);
+            int t = getTail(), tmp = peekTail();
             if (t == 0) t = getMaxSize();
-            setTail(--t);
+            setTail(t-1);
             commonRemove();
             return tmp;
         }
@@ -301,7 +297,7 @@ public class Main {
         public PrioritizedElement priorityRemove() throws RuntimeException {
             if (isEmpty()) throw new RuntimeException("Queue is empty");
 
-            int h = getHead(), v = getQueueAt(h), p = priority[h];
+            int v = peek(), p = priority[getHead()];
             remove();
             return new PrioritizedElement(v, p);
         }
