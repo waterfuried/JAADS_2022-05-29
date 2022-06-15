@@ -33,6 +33,8 @@ class Stack {
         return stackArr[top];
     }
 
+    public void clear() { top = -1; }
+
     @Override public String toString() {
         if (isEmpty()) return "";
         StringBuilder sb = new StringBuilder();

@@ -92,7 +92,7 @@ class Graph {
         vertexList[start].wasVisited = true;
         queue.insert(start);
         int[] p = new int[size]; // массив для пути
-	    p[start] = -1;
+        p[start] = -1;
         int v2;
         while (!queue.isEmpty()) {
             int v1 = queue.remove();
@@ -107,16 +107,19 @@ class Graph {
                 }
             } while (v2 != end && v2 != -1);
         }
+        // поскольку стек все равно уже создан при создании объекта класса,
+        // а используется он только в DFS, стоит использовать его вместо
+        // выделения памяти под новый стек
+        stack.clear();
         // восстановить путь от конца к началу
-        Stack s = new Stack(size);
         v2 = end;
         while (v2 >= 0) {
-            s.push(v2);
+            stack.push(v2);
             v2 = p[v2];
         }
         // и вывести его в нормальном (от начала к концу) виде
-        if (s.hasElements())
-            s.display(true,
+        if (stack.hasElements())
+            stack.display(true,
                     "Кратчайший путь от "+getLabel(start)+" до "+getLabel(end)+":\n", "-> ");
         for (int i = 0; i < size; i++)
             vertexList[i].wasVisited = false;
