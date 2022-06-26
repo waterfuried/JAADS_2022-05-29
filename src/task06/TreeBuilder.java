@@ -1,90 +1,69 @@
-import java.util.Objects;
+/*
+    Урок 6. Деревья
+    1. Создать и запустить программу для построения двоичного дерева.
+       В цикле построить двести деревьев из 100 элементов.
+       Данные, которыми необходимо заполнить узлы деревьев,
+       представляются в виде чисел типа int.
+       Число, которое попадает в узел, должно генерироваться
+       случайным образом в диапазоне от -100 до 100.
+    2. Проанализировать, какой процент созданных деревьев являются несбалансированными.
+*/
+package task06;
 
 public class TreeBuilder {
-    private static class Cat {
-        String name;
-        int age;
-        public Cat(String name, int age) {
-            this.name = name;
-            this.age = age;
-        }
-        public String getName() {
-            return name;
-        }
-        public void setName(String name) {
-            this.name = name;
-        }
-        public int getAge() {
-            return age;
-        }
-        public void setAge(int age) {
-            this.age = age;
-        }
-        @Override public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Cat cat = (Cat) o;
-            return age == cat.age &&
-                    name.equals(cat.name);
-        }
-        @Override public int hashCode() {
-            return Objects.hash(name, age);
-        }
-        @Override public String toString() {
-            return String.format("C (%s, %d)", name,age);
-        }
-    }
-    public static class Tree {
+    public static class Tree<T extends Comparable<T>> {
         public class TreeNode {
-            private Cat cat;
+            private final T data;
             public TreeNode leftChild;
             public TreeNode rightChild;
 
-            public TreeNode(Cat cat) {
-                this.cat = cat;
+            public TreeNode(T data) {
+                this.data = data;
             }
 
-            @Override
-            public String toString() {
-                return String.format("TN(%s)", cat);
+            @Override public String toString() {
+                return String.format("%s", data);
             }
         }
+
         private TreeNode root;
+
         public Tree() {
             root = null;
         }
-        public void insert(Cat c) {
-            TreeNode node = new TreeNode(c);
+
+        public boolean insert(T t) {
+            TreeNode node = new TreeNode(t);
             if (root == null) {
                 root = node;
+                return true;
             } else {
                 TreeNode current = root;
                 TreeNode parent;
                 while (true) {
                     parent = current;
-                    if (c.age < current.cat.age) {
+                    if (t.compareTo(current.data) < 0) {
                         current = current.leftChild;
                         if (current == null) {
                             parent.leftChild = node;
-                            return;
+                            return true;
                         }
-                    } else if (c.age > current.cat.age){
+                    } else if (t.compareTo(current.data) > 0){
                         current = current.rightChild;
                         if (current == null) {
                             parent.rightChild = node;
-                            return;
+                            return true;
                         }
-                    } else {
-                        return;
-                    }
+                    } else
+                        return false;
                 }
-
             }
         }
-        public Cat find(int age) {
+
+        public T find(T t) {
             TreeNode current = root;
-            while (current.cat.age != age) {
-                if (age < current.cat.age)
+            while (current.data.compareTo(t) != 0) {
+                if (t.compareTo(current.data) < 0)
                     current = current.leftChild;
                 else
                     current = current.rightChild;
@@ -92,25 +71,64 @@ public class TreeBuilder {
                 if (current == null)
                     return null;
             }
-            return current.cat;
+            return current.data;
         }
-        private void inOrderTravers(TreeNode current) {
+
+        String tabs;
+
+        private int inOrderTravers(TreeNode current, String s) {
+            int count = 0;
             if (current != null) {
-                System.out.println(current);
-                inOrderTravers(current.leftChild);
-                inOrderTravers(current.rightChild);
+                count++;
+                logger.info(s+": "+current+" (heights of subtrees: "+
+                        "left="+getHeight(current.leftChild)+
+                        ", right="+getHeight(current.rightChild)+")");
+
+                tabs+="\t";
+                count += inOrderTravers(current.leftChild, tabs+"left child");
+                tabs+="\t";
+                count += inOrderTravers(current.rightChild, tabs+"right child");
             }
+            if (tabs.length() > 0) tabs = tabs.substring(0, tabs.length()-1); else tabs = "";
+            return count;
         }
-        public void displayTree() {
-            inOrderTravers(root);
+
+        public void displayTree(boolean checkBalance) {
+            tabs = "";
+            int n = inOrderTravers(root, "root");
+            logger.info("Tree has "+(n == 0 ? "no" : n)+" element"+(n == 1 ? "" : "s")+
+                    ", tree height="+getHeight(root));
+            if (checkBalance)
+                logger.info("Tree is "+(checkBalance(root) ? "" : "not ")+"balanced");
         }
-        public boolean delete(int age) {
+
+        /*
+            двоичное дерево поиска (Binary Search Tree, BST) сбалансировано (по высоте),
+            если
+                количество его правых и левых уровней
+                (или высоты двух поддеревьев для КАЖДОЙ ЕГО ВЕРШИНЫ)
+            различается/различаются не более чем на 1.
+         */
+        private int getHeight(TreeNode t) {
+            return t == null ? 0 : 1+Math.max(getHeight(t.leftChild), getHeight(t.rightChild));
+        }
+
+        private boolean checkBalance(TreeNode node) {
+            if (node != null) {
+                if (Math.abs(getHeight(node.leftChild)-getHeight(node.rightChild)) <= 1) return false;
+                checkBalance(node.leftChild);
+                checkBalance(node.rightChild);
+            }
+            return true;
+        }
+
+        public boolean delete(T t) {
             TreeNode curr = root;
             TreeNode prev = root;
             boolean isLeftChild = true;
-            while (curr.cat.age != age) {
+            while (curr.data.compareTo(t) != 0) {
                 prev = curr;
-                if (age < curr.cat.age) {
+                if (t.compareTo(curr.data) < 0) {
                     isLeftChild = true;
                     curr = curr.leftChild;
                 } else {
@@ -172,9 +190,45 @@ public class TreeBuilder {
             }
             return successor;
         }
-
     }
 
+    static int randomInt(int min, int max) {
+        return min + Math.round((float)Math.random()*(max - min));
+    }
+
+    static  { logger = new EventLogger(TreeBuilder.class.getName(), null); }
+
+    static final EventLogger logger;
+
     public static void main(String[] args) {
+        /*Tree<Integer> t0 = new Tree<>();
+        t0.insert(10);
+        t0.insert(9);
+        t0.insert(20);
+        t0.insert(5);
+        t0.insert(15);
+        t0.insert(25);
+        t0.insert(6);
+        t0.insert(12);
+        t0.insert(7);
+        t0.displayTree(true);*/
+        final int NUM_TREES = 200, TREE_SIZE = 100;
+
+        int nBalanced = 0;
+        for (int i = 0; i < NUM_TREES; i++) {
+            Tree<Integer> t = new Tree<>();
+            logger.info("\nTree #"+(i+1)+":");
+            for (int j = 0; j < TREE_SIZE; j++) {
+                boolean inserted;
+                do { inserted = t.insert(randomInt(-100, 100)); }
+                while (!inserted);
+            }
+
+            t.displayTree(true);
+            if (t.checkBalance(t.root)) nBalanced++;
+            if (i < NUM_TREES-1) logger.info("");
+        }
+        logger.info(Math.round((100f*nBalanced)/NUM_TREES)+"% of trees are balanced");
+        logger.closeHandlers();
     }
 }
