@@ -4,27 +4,23 @@ import java.io.*;
 
 public class HashApp {
   public static void main(String[] args) throws IOException {
-    Item aDataItem;
-    int aKey, size, n, keysPerCell;
+    int aKey;
+    final int size, n, keysPerCell = 10;
+    boolean enough = false;
     
     // Ввод размеров
     System.out.print("Enter size of hash table: ");
     size = getInt();
     System.out.print("Enter initial number of items: ");
     n = getInt();
-    keysPerCell = 10;
-    
     // Создание таблицы
     HashTable theHashTable = new HashTable(size);
     for (int j=0; j<n; j++) {
-      aKey = (int)(java.lang.Math.random() * keysPerCell * size);
-      aDataItem = new Item(aKey);
-      theHashTable.insert(aDataItem);
+      theHashTable.insert((int)(Math.random() * keysPerCell * size));
     }
     
-    while (true) {
-      System.out.print("Enter first letter of ");
-      System.out.print("show, insert, delete, or find: ");
+    while (!enough) {
+      System.out.print("Enter first letter of show, insert, delete, find, or exit: ");
       char choice = getChar();
       switch (choice) {
         case 's':
@@ -33,22 +29,20 @@ public class HashApp {
         case 'i':
           System.out.print("Enter key value to insert: ");
           aKey = getInt();
-          aDataItem = new Item(aKey);
-          theHashTable.insert(aDataItem);
+          System.out.println(aKey + " has " + (theHashTable.insert(aKey) ? "" : "not ") + "been inserted");
           break;
         case 'd':
           System.out.print("Enter key value to delete: ");
           aKey = getInt();
-          theHashTable.delete(aKey);
+          System.out.println(aKey + (theHashTable.delete(aKey) ? " has been deleted" : ": no such value"));
           break;
         case 'f':
           System.out.print("Enter key value to find: ");
           aKey = getInt();
-          aDataItem = theHashTable.find(aKey);
-          if (aDataItem != null) {
-            System.out.println("Found " + aKey);
-          } else
-              System.out.println("Could not find " + aKey);
+          System.out.println(theHashTable.find(aKey) != null ? aKey + " found" : "Could not find " + aKey);
+          break;
+        case 'e':
+          enough = true;
           break;
         default:
           System.out.print("Invalid entry\n");
@@ -57,19 +51,15 @@ public class HashApp {
   }
   
   public static String getString() throws IOException {
-    InputStreamReader isr = new InputStreamReader(System.in);
-    BufferedReader br = new BufferedReader(isr);
-    String s = br.readLine();
-    return s;
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    return br.readLine();
   }
   
   public static char getChar() throws IOException {
-    String s = getString();
-    return s.charAt(0);
+    return getString().charAt(0);
   }
 
   public static int getInt() throws IOException {
-    String s = getString();
-    return Integer.parseInt(s);
+    return Integer.parseInt(getString());
   }
 }
